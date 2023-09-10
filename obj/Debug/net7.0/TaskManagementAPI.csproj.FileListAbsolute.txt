@@ -52,3 +52,8 @@ C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Pr
 C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Tokens.dll
 C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\System.IdentityModel.Tokens.Jwt.dll
 C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\System.Security.Permissions.dll
+C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\BouncyCastle.Cryptography.dll
+C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\MailKit.dll
+C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\MimeKit.dll
+C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\System.Security.Cryptography.Pkcs.dll
+C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\runtimes\win\lib\net7.0\System.Security.Cryptography.Pkcs.dll

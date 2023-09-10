@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace TaskManagementAPI.Models;
 
@@ -17,6 +18,15 @@ public class User
     [Required]
     [Column(TypeName = "VARCHAR(255)")]
     public required string  Password { get; set; }
+
+    [Column(TypeName = "VARCHAR(255)")]
+    [DefaultValue(false)]
+    public bool IsActive { get; set; }
+    
+    
+    [Column(TypeName = "VARCHAR(255)")]
+    public Guid? ResetToken { get; set; }
+
     
     public DateTime CreatedAt { get; set; }
     

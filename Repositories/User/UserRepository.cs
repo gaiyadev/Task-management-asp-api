@@ -35,12 +35,16 @@ public class UserRepository : IUserRepository
         { 
             // Hash the password using bcrypt
             string hashedPassword = _passwordService.HashPassword(signupDto.Password);
+            string guidHex = Guid.NewGuid().ToString("N"); // Generate a new GUID as a hexadecimal string
+            Guid? verificationToken = new Guid(guidHex); // Convert the hexadecimal string to Guid
+            
             // Create a new user entity
             var user = new Models.User()
             {
                 Email = signupDto.Email,
                 Password = hashedPassword,
                 Name = signupDto.Name,
+                ResetToken = verificationToken,
             };
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
@@ -66,9 +70,32 @@ public class UserRepository : IUserRepository
             throw;
         }
     }
-    
+
+    public async Task<Models.User?> VerifyEmail(Guid token)
+    {
+        try
+        {
+            var findUser = await _context.Users.Where(u => u.ResetToken == token).FirstOrDefaultAsync();
+            if (findUser == null)
+            {
+                return null;
+            }
+            findUser.ResetToken = null;
+            findUser.IsActive = true;
+            _context.Update(findUser);
+            await _context.SaveChangesAsync();
+            return findUser;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            _logger.LogError(ex.Message);
+            throw;
+        }
+    }
+
     // Signin
-    public async ValueTask<Models.User?> SignIn(SigninDto signinDto)
+    public async Task<Models.User?> SignIn(SigninDto signinDto)
     {
         try
         {
@@ -77,11 +104,44 @@ public class UserRepository : IUserRepository
           {
               return null;
           }
+          
+          if (user.IsActive == false)
+          {
+              return null;
+          }
+          
           return user;
         }
         catch (Exception e)
         {
             _logger.LogError(e.Message);
+            throw;
+        }
+    }
+
+    public async Task<Models.User?> ChangePassword(ChangePasswordDto changePasswordDto, Guid id)
+    {
+        try
+        {
+            var findUser = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
+            if (findUser == null)
+            {
+                return null;
+            }
+
+            if (!_passwordService.VerifyPassword(changePasswordDto.Password,findUser.Password))
+            {
+                return null;
+            }
+            string hashedPassword = _passwordService.HashPassword(changePasswordDto.NewPassword);
+            findUser.Password = hashedPassword;
+            _context.Update(findUser);
+            await _context.SaveChangesAsync();
+            return findUser;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
             throw;
         }
     }

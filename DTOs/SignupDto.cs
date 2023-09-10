@@ -8,7 +8,6 @@ public class SignupDto
     [Required]
     [RegularExpression(@"^[a-zA-Z''-'\s]{1,40}$", 
         ErrorMessage = "Name field allows only characters.")]
-    [StringLength(3, ErrorMessage = "Name length can't be less than 3.")]
     public required string Name { get; set; }
     
     

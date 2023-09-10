@@ -33,6 +33,9 @@ builder.Services.AddSingleton<PasswordService>();
 
 builder.Services.AddSingleton<JwtService>();
 
+builder.Services.AddTransient<EmailService>();
+
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

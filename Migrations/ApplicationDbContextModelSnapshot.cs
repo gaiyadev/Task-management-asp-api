@@ -59,12 +59,21 @@ namespace TaskManagementAPI.Migrations
                         .IsRequired()
                         .HasColumnType("VARCHAR(255)");
 
+                    b.Property<string>("IsActive")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("VARCHAR(255)")
+                        .HasDefaultValue("0");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("VARCHAR(255)");
 
                     b.Property<string>("Password")
                         .IsRequired()
+                        .HasColumnType("VARCHAR(255)");
+
+                    b.Property<string>("ResetToken")
                         .HasColumnType("VARCHAR(255)");
 
                     b.Property<DateTime>("UpdatedAt")

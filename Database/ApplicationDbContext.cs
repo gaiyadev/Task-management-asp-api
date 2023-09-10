@@ -27,5 +27,15 @@ public class ApplicationDbContext : DbContext
             .HasIndex(e => e.Email)
             .IsUnique();
         base.OnModelCreating(modelBuilder);
+        
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<User>()
+            .Property(e => e.IsActive)
+            .HasDefaultValue(false);
+        
+        modelBuilder.Entity<User>()
+            .Property(e => e.ResetToken)
+            .IsRequired(false);
     }
 }
