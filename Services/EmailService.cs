@@ -17,11 +17,6 @@ namespace TaskManagementAPI.Services
 
         public async Task SendEmail(string recipientEmail, string subject, string body)
         {
-            _logger.LogInformation(recipientEmail);
-            _logger.LogInformation(subject);
-
-            _logger.LogInformation(body);
-
             try
             {
                 // Create a new MimeMessage.

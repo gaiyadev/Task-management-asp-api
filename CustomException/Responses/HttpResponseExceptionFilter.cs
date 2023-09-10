@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace TaskManagementAPI.CustomException;
+namespace TaskManagementAPI.CustomException.Responses;
 
 public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
 {

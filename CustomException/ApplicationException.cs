@@ -4,8 +4,8 @@ namespace TaskManagementAPI.CustomException;
 
 public class ApplicationException : Exception
 {
-    protected ApplicationException(string message, HttpStatusCode statusCode) : base(message)
-    {        StatusCode = statusCode;
+    protected ApplicationException(string message) : base(message)
+    {       
 
     }
     public HttpStatusCode StatusCode { get; private set; }

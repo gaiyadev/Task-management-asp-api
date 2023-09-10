@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TaskManagementAPI.CustomException;
+using TaskManagementAPI.CustomException.Exceptions;
 using TaskManagementAPI.Database;
 using TaskManagementAPI.DTOs;
 using TaskManagementAPI.Services;
@@ -26,15 +28,15 @@ public class UserRepository : IUserRepository
     public async Task<Models.User?> Signup(SignupDto signupDto)
     {
         var findUser = await _context.Users.AnyAsync(user => user.Email == signupDto.Email);
+        
         if (findUser)
         {
-            return null;
+            throw new ConflictException("Email address already taken");
         }
-      
+        
         try
         { 
-            // Hash the password using bcrypt
-            string hashedPassword = _passwordService.HashPassword(signupDto.Password);
+            string hashedPassword = _passwordService.HashPassword(signupDto.Password); // Hashing password
             string guidHex = Guid.NewGuid().ToString("N"); // Generate a new GUID as a hexadecimal string
             Guid? verificationToken = new Guid(guidHex); // Convert the hexadecimal string to Guid
             
@@ -60,26 +62,25 @@ public class UserRepository : IUserRepository
 // Get User By Email
     public async  Task<Models.User?> GetUserByEmail(string email)
     {
-        try
+        var findUser = await _context.Users. Where(u => u.Email == email).FirstOrDefaultAsync();
+
+        if (findUser == null)
         {
-            return await _context.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
+            throw new NotFoundException("User not found");
         }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            throw;
-        }
+
+        return findUser;
     }
 
     public async Task<Models.User?> VerifyEmail(Guid token)
     {
+        var findUser = await _context.Users.Where(u => u.ResetToken == token).FirstOrDefaultAsync();
+        if (findUser == null)
+        {
+            throw new NotFoundException("Token invalid or expired");
+        }
         try
         {
-            var findUser = await _context.Users.Where(u => u.ResetToken == token).FirstOrDefaultAsync();
-            if (findUser == null)
-            {
-                return null;
-            }
             findUser.ResetToken = null;
             findUser.IsActive = true;
             _context.Update(findUser);
@@ -88,7 +89,6 @@ public class UserRepository : IUserRepository
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
             _logger.LogError(ex.Message);
             throw;
         }
@@ -97,42 +97,45 @@ public class UserRepository : IUserRepository
     // Signin
     public async Task<Models.User?> SignIn(SigninDto signinDto)
     {
-        try
+        var  user = await GetUserByEmail(signinDto.Email);
+        
+        if (user == null)
         {
-          var  user = await GetUserByEmail(signinDto.Email);
-          if (user == null || !_passwordService.VerifyPassword(signinDto.Password, user.Password))
-          {
-              return null;
-          }
-          
-          if (user.IsActive == false)
-          {
-              return null;
-          }
-          
-          return user;
+            throw new ForbiddenException("Invalid username or password.");
         }
-        catch (Exception e)
+
+        if (!_passwordService.VerifyPassword(signinDto.Password, user.Password))
         {
-            _logger.LogError(e.Message);
-            throw;
+            throw new ForbiddenException("Invalid username or password");
         }
+        if (user.IsActive == false)
+        {
+            throw new ForbiddenException("Account is not active");
+        }
+        return user;
     }
 
     public async Task<Models.User?> ChangePassword(ChangePasswordDto changePasswordDto, Guid id)
     {
+        var findUser = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
+        
+        if (findUser == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        if (changePasswordDto.NewPassword != changePasswordDto.ConfirmPassword)
+        {
+            throw new BadHttpRequestException("Password mismacth");
+        }
+        
+        if (!_passwordService.VerifyPassword(changePasswordDto.Password,findUser.Password))
+        {
+            throw new ForbiddenException("Current password not correct");
+        }
+        
         try
         {
-            var findUser = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
-            if (findUser == null)
-            {
-                return null;
-            }
-
-            if (!_passwordService.VerifyPassword(changePasswordDto.Password,findUser.Password))
-            {
-                return null;
-            }
             string hashedPassword = _passwordService.HashPassword(changePasswordDto.NewPassword);
             findUser.Password = hashedPassword;
             _context.Update(findUser);

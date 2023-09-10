@@ -1,4 +1,4 @@
-﻿namespace TaskManagementAPI.CustomException;
+﻿namespace TaskManagementAPI.CustomException.Responses;
 
 public class HttpResponseException : Exception
 {
