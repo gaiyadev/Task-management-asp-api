@@ -5,6 +5,7 @@ namespace TaskManagementAPI.Models;
 
 public class Todo
 {
+    [Key]
     public int Id { get; set; }
 
     [Required(ErrorMessage = "Title is required")]
@@ -16,6 +17,11 @@ public class Todo
     
     [Required]
     public required bool IsCompleted { get; set; }
+    
+      
+    [Column(TypeName = "timestamp")]
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-
+    [Column(TypeName = "timestamp")]
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

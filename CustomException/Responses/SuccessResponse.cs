@@ -33,7 +33,7 @@ public static class SuccessResponse
 
         return new ObjectResult(apiResponse)
         {
-            StatusCode = 201
+            StatusCode = 200
         };
     }
 }

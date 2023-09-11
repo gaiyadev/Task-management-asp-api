@@ -12,8 +12,8 @@ using TaskManagementAPI.Database;
 namespace TaskManagementAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230910142249_UserMigration")]
-    partial class UserMigration
+    [Migration("20230911124647_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,39 @@ namespace TaskManagementAPI.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("TaskManagementAPI.Models.Profile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("Occupation")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(255)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Profiles");
+                });
+
             modelBuilder.Entity("TaskManagementAPI.Models.Todo", b =>
                 {
                     b.Property<int>("Id")
@@ -32,6 +65,9 @@ namespace TaskManagementAPI.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("Duration")
                         .IsRequired()
@@ -44,6 +80,9 @@ namespace TaskManagementAPI.Migrations
                         .IsRequired()
                         .HasColumnType("VARCHAR(255)");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp");
+
                     b.HasKey("Id");
 
                     b.ToTable("Todos");
@@ -51,12 +90,14 @@ namespace TaskManagementAPI.Migrations
 
             modelBuilder.Entity("TaskManagementAPI.Models.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -80,7 +121,7 @@ namespace TaskManagementAPI.Migrations
                         .HasColumnType("VARCHAR(255)");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp");
 
                     b.HasKey("Id");
 
@@ -88,6 +129,23 @@ namespace TaskManagementAPI.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("TaskManagementAPI.Models.Profile", b =>
+                {
+                    b.HasOne("TaskManagementAPI.Models.User", "User")
+                        .WithOne("Profile")
+                        .HasForeignKey("TaskManagementAPI.Models.Profile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TaskManagementAPI.Models.User", b =>
+                {
+                    b.Navigation("Profile")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

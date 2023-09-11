@@ -2,7 +2,7 @@
 
 public class BadRequestException : ApplicationException
 {
-    protected BadRequestException(string message) : base(message)
+    public BadRequestException(string message) : base(message)
     {
     }
 }

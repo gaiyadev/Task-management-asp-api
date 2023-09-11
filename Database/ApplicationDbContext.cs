@@ -15,6 +15,9 @@ public class ApplicationDbContext : DbContext
 
     public required DbSet<User> Users { get; set; }
     public required DbSet<Todo> Todos { get; set; }
+    
+    public required DbSet<Profile> Profiles { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -37,5 +40,12 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<User>()
             .Property(e => e.ResetToken)
             .IsRequired(false);
+
+        // modelBuilder.Entity<User>()
+        //     .HasOne(user => user.Profile) // User has one Profile
+        //     .WithOne(profile => profile.User) // Profile has one User
+        //     .HasForeignKey<Profile>(profile => profile.UserId).IsRequired(); // Profile.UserId is the foreign key
+        // // Relationship is required (one-to-one)
+
     }
 }

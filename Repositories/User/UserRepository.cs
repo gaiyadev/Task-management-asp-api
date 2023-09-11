@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TaskManagementAPI.CustomException;
 using TaskManagementAPI.CustomException.Exceptions;
 using TaskManagementAPI.Database;
 using TaskManagementAPI.DTOs;
+using TaskManagementAPI.DTOs.Responses;
+using TaskManagementAPI.Models;
 using TaskManagementAPI.Services;
 
 namespace TaskManagementAPI.Repositories.User;
@@ -55,20 +56,37 @@ public class UserRepository : IUserRepository
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-           throw;
+            throw new InternalServerException(ex.Message);
         }
     }
     
 // Get User By Email
-    public async  Task<Models.User?> GetUserByEmail(string email)
+    public async  Task<Models.User> GetUserByEmail(string email)
     {
-        var findUser = await _context.Users. Where(u => u.Email == email).FirstOrDefaultAsync();
+        var findUser = await _context.Users.Where(u => u.Email == email)
+            .Include(u => u.Profile) 
+            // .Select(u => new
+            // {
+            //     u.Name,
+            //     u.Email,
+            //     u.IsActive,
+            //     u.Id,
+            //     u.CreatedAt,
+            //     Profile = new
+            //     {
+            //         u.Profile.Id,
+            //         u.Profile.Username,
+            //         u.Profile.Occupation,
+            //         u.Profile.UserId,
+            //         u.CreatedAt
+            //     }
+            // })
+            .FirstOrDefaultAsync();
 
         if (findUser == null)
         {
             throw new NotFoundException("User not found");
         }
-
         return findUser;
     }
 
@@ -90,7 +108,7 @@ public class UserRepository : IUserRepository
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            throw;
+            throw new InternalServerException(ex.Message);
         }
     }
 
@@ -108,14 +126,16 @@ public class UserRepository : IUserRepository
         {
             throw new ForbiddenException("Invalid username or password");
         }
+        
         if (user.IsActive == false)
         {
             throw new ForbiddenException("Account is not active");
         }
+        
         return user;
     }
 
-    public async Task<Models.User?> ChangePassword(ChangePasswordDto changePasswordDto, Guid id)
+    public async Task<Models.User?> ChangePassword(ChangePasswordDto changePasswordDto, int id)
     {
         var findUser = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
         
@@ -126,7 +146,7 @@ public class UserRepository : IUserRepository
 
         if (changePasswordDto.NewPassword != changePasswordDto.ConfirmPassword)
         {
-            throw new BadHttpRequestException("Password mismacth");
+            throw new BadRequestException("Password mismatch");
         }
         
         if (!_passwordService.VerifyPassword(changePasswordDto.Password,findUser.Password))
@@ -145,7 +165,48 @@ public class UserRepository : IUserRepository
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            throw;
+            throw new InternalServerException(ex.Message);
+        }
+    }
+
+    public async Task<Models.User?> GetUserById(int id)
+    {
+        var findUser = await _context.Users. FirstOrDefaultAsync(user => user.Id == id);
+
+        if (findUser == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        return findUser;
+    }
+
+    public async Task<Models.User?> Profile(ProfileDto profileDto, int id)
+    {
+        var findUser = await GetUserById(id);
+
+        if (findUser == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+        
+        try
+        {
+            var profile = new Profile()
+            {
+                Username = profileDto.Username,
+                Occupation = profileDto.Occupation,
+                UserId = findUser.Id,
+            };
+        
+            await _context.Profiles.AddAsync(profile);
+            await _context.SaveChangesAsync();
+            return findUser;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            throw new InternalServerException(ex.Message);
         }
     }
 }

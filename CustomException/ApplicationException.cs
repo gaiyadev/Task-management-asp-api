@@ -8,7 +8,7 @@ public class ApplicationException : Exception
     {       
 
     }
-    public HttpStatusCode StatusCode { get; private set; }
+    // public HttpStatusCode StatusCode { get; private set; }
     
     public override string ToString()
     {

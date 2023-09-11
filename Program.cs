@@ -1,5 +1,8 @@
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagementAPI.Database;
@@ -12,10 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-// builder.Services.AddControllers(options =>
-// {
-//     options.Filters.Add<HttpResponseExceptionFilter>();
-// });
+
+
 // Database configuration Injection
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ApplicationDbContext")));
@@ -34,7 +35,6 @@ builder.Services.AddSingleton<PasswordService>();
 builder.Services.AddSingleton<JwtService>();
 
 builder.Services.AddTransient<EmailService>();
-
 
 builder.Services.AddAuthentication(options =>
 {
@@ -65,7 +65,6 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
-
 
 var app = builder.Build();
 

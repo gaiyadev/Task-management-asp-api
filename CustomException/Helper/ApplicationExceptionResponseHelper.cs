@@ -46,8 +46,6 @@ namespace TaskManagementAPI.CustomException.Helper
                 StatusCode = 400
             };
         }
-
-  
         
         public static IActionResult HandleConflictException(string errorMessage)
         {
@@ -62,8 +60,19 @@ namespace TaskManagementAPI.CustomException.Helper
                 StatusCode = 409
             };
         }
-        
-        
+        public static IActionResult HandleUnauthorizedException(string errorMessage)
+        {
+            var unauthorizedResponse = new ErrorApiResponse
+            {
+                Error = errorMessage,
+                StatusCode = 401,
+                Title =  HttpStatusTitles.Unauthorized,
+            };
+            return new ObjectResult(unauthorizedResponse)
+            {
+                StatusCode = 409
+            };
+        }
         public static IActionResult HandleInternalServerError(string errorMessage)
         {
             var internalServerErrorApiResponse = new ErrorApiResponse

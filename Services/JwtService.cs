@@ -16,7 +16,7 @@ namespace TaskManagementAPI.Services
             _secret = _configuration.GetSection("Jwt")["SecretKey"]!;
         }
 
-        public string CreateToken(string email, string name, Guid id)
+        public string CreateToken(string email, string name, int id)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
 

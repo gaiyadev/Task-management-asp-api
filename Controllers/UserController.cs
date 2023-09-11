@@ -34,7 +34,7 @@ public class UserController : ControllerBase
         {
             var user = await _userRepository.Signup(signupDto);
             
-// Is rarely for this to happen but in case
+            // Is rarely for this to happen but in case
             if (user == null)
             {
                 return ApplicationExceptionResponseHelper.HandleNotFound("User not found");
@@ -56,6 +56,10 @@ public class UserController : ControllerBase
         catch (ConflictException ex)
         {
             return ApplicationExceptionResponseHelper.HandleConflictException(ex.Message);
+        }
+        catch (InternalServerException ex)
+        {
+            return ApplicationExceptionResponseHelper.HandleInternalServerError(ex.Message);
         }
         catch (Exception ex)
         {
@@ -83,11 +87,15 @@ public class UserController : ControllerBase
             {
                 new { id = user.Id, email = user.Email }
             };
-            return SuccessResponse.HandleOk("Successfully login", apiResponse,token);
+            return SuccessResponse.HandleOk("Successfully login", apiResponse, token);
         }
         catch (ForbiddenException ex)
         {
             return ApplicationExceptionResponseHelper.HandleForbidden(ex.Message);
+        }
+        catch (InternalServerException ex)
+        {
+            return ApplicationExceptionResponseHelper.HandleInternalServerError(ex.Message);
         }
         catch (Exception ex)
         {
@@ -117,34 +125,53 @@ public class UserController : ControllerBase
         {
             return ApplicationExceptionResponseHelper.HandleNotFound(ex.Message);
         }
+        catch (InternalServerException ex)
+        {
+            return ApplicationExceptionResponseHelper.HandleInternalServerError(ex.Message);
+        }
         catch (Exception ex)
         {
             return ApplicationExceptionResponseHelper.HandleConflictException(ex.Message);
         }
     }
 
-    private (string?, bool?) GetUserClaims()
+    private (Guid?, bool?) GetUserClaims()
     {
-        var userEmailClaim = User.FindFirst(ClaimTypes.Email);
+        var userEmailClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userEmailClaim == null)
         {
-            return (null, null); // Return null values for both string and bool
+            return (null, null); // Return null values for both Guid and bool
         }
-        return (userEmailClaim.Value, true); // Return the email claim value and true for bool
+
+        // Assuming you have a method to parse the email claim value into a Guid
+        if (Guid.TryParse(userEmailClaim.Value, out Guid parsedGuid))
+        {
+            return (parsedGuid, true); // Return the parsed Guid and true for bool
+        }
+        else
+        {
+            return (null, false); // Return null for Guid and false for bool if parsing fails
+        }
     }
+
 
     [HttpPut("change-password")]
     [Authorize]
     public async Task<IActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
     {
-        var (emailClaim, isClaimFound) = GetUserClaims();
-        if (emailClaim == null || isClaimFound == false)
+        // Get the user's ID claim
+        var userIdClaim = User.FindFirst(ClaimTypes.Email);
+
+        if (userIdClaim == null)
         {
             return Forbid();
         }
         
-        var findEmail = await _userRepository.GetUserByEmail(emailClaim);
+        string encodedUserId = userIdClaim.Value;
+        
+        var findEmail = await _userRepository.GetUserByEmail(encodedUserId);
+        
         if (findEmail == null)
         {
             return ApplicationExceptionResponseHelper.HandleNotFound("Claim User not found");
@@ -174,9 +201,13 @@ public class UserController : ControllerBase
         {
             return ApplicationExceptionResponseHelper.HandleForbidden(ex.Message);
         }
-        catch (BadHttpRequestException ex)
+        catch (BadRequestException ex)
         {
             return ApplicationExceptionResponseHelper.HandleBadRequest(ex.Message);
+        }
+        catch (InternalServerException ex)
+        {
+            return ApplicationExceptionResponseHelper.HandleInternalServerError(ex.Message);
         }
         catch (Exception ex)
         {
@@ -196,7 +227,38 @@ public class UserController : ControllerBase
                 new {Data = user }
             };
             return SuccessResponse.HandleOk("Fetched Successfully", apiResponse, null);
+        }
+        catch (NotFoundException ex)
+        {
+            return ApplicationExceptionResponseHelper.HandleNotFound(ex.Message);
+        }
+        catch (InternalServerException ex)
+        {
+            return ApplicationExceptionResponseHelper.HandleInternalServerError(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return ApplicationExceptionResponseHelper.HandleInternalServerError(ex.Message);
+        }
+    }
+    
+    [HttpGet("account/{id:int}")]
+    public async Task<IActionResult> GetUserById(int id)
+    {
+        try
+        {
+            var user = await _userRepository.GetUserById(id);
 
+            if (user == null)
+            {
+                return ApplicationExceptionResponseHelper.HandleNotFound("user not found");
+            }
+
+            var apiResponse = new List<object>
+            {
+                new { Data = user }
+            };
+            return SuccessResponse.HandleOk("Successfully changes", apiResponse, null);
         }
         catch (NotFoundException ex)
         {
@@ -207,4 +269,48 @@ public class UserController : ControllerBase
             return ApplicationExceptionResponseHelper.HandleInternalServerError(ex.Message);
         }
     }
+
+
+    [HttpPut("account")]
+    [Authorize]
+    public async Task<IActionResult> Profile(ProfileDto profileDto)
+    {
+        try
+        {
+            // Get the user's ID claim
+            var userIdClaim = User.FindFirst(ClaimTypes.Email);
+
+            if (userIdClaim == null)
+            {
+                return Forbid();
+            }
+        
+            string encodedUserId = userIdClaim.Value;
+        
+            var findEmail = await _userRepository.GetUserByEmail(encodedUserId);
+            
+            var user = await _userRepository.Profile(profileDto, findEmail.Id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            Console.WriteLine(user);
+            var apiResponse = new List<object>
+            {
+                // new { Data = user }
+            };
+            return SuccessResponse.HandleCreated("Successfully updated" , null,apiResponse);
+        }
+        catch (NotFoundException ex)
+        {
+            return ApplicationExceptionResponseHelper.HandleNotFound(ex.Message);
+
+        }
+        catch (Exception ex)
+        {
+            return ApplicationExceptionResponseHelper.HandleInternalServerError(ex.Message);
+
+        }
+    }
+    
 }
