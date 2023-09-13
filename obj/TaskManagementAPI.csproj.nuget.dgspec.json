@@ -42,6 +42,10 @@
               "target": "Package",
               "version": "[4.0.3, )"
             },
+            "FluentValidation.AspNetCore": {
+              "target": "Package",
+              "version": "[11.3.0, )"
+            },
             "MailKit": {
               "target": "Package",
               "version": "[4.2.0, )"
@@ -71,6 +75,10 @@
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[7.0.4, )"
+            },
+            "Pagination.EntityFrameworkCore.Extensions": {
+              "target": "Package",
+              "version": "[2.4.3, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

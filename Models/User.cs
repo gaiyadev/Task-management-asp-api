@@ -20,7 +20,7 @@ namespace TaskManagementAPI.Models;
     
         [Required]
         [Column(TypeName = "VARCHAR(255)")]
-        public required string  Password { get; set; }
+        public string  Password { get; set; }
 
         [Column(TypeName = "VARCHAR(255)")]
         [DefaultValue(false)]
@@ -31,11 +31,16 @@ namespace TaskManagementAPI.Models;
         public Guid? ResetToken { get; set; }
         
         public Profile Profile { get; set; }
-    
-        [Column(TypeName = "timestamp")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Column(TypeName = "timestamp")]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        [JsonIgnore]
+        public ICollection<Todo> Todos { get; set; }
+    
+        [DataType(DataType.DateTime)]
+        [Column(TypeName = "timestamp with time zone")]   
+        public DateTime CreatedAt { get; set; }
+
+        [DataType(DataType.DateTime)]
+        [Column(TypeName = "timestamp with time zone")]
+        public DateTime UpdatedAt { get; set; } 
     }
 

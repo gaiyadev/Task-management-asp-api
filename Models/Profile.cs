@@ -22,9 +22,11 @@ public class Profile
     [JsonIgnore] // Add this attribute to prevent circular reference
     public User User { get; set; }
 
-    [Column(TypeName = "timestamp")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    [DataType(DataType.DateTime)]
+    [Column(TypeName = "timestamp with time zone")]
+    public DateTime CreatedAt { get; set; }
 
-    [Column(TypeName = "timestamp")]
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    [DataType(DataType.DateTime)]
+    [Column(TypeName = "timestamp with time zone")]
+    public DateTime UpdatedAt { get; set; } 
 }

@@ -57,3 +57,7 @@ C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\MailKit.dll
 C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\MimeKit.dll
 C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\System.Security.Cryptography.Pkcs.dll
 C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\runtimes\win\lib\net7.0\System.Security.Cryptography.Pkcs.dll
+C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\FluentValidation.dll
+C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\FluentValidation.AspNetCore.dll
+C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\FluentValidation.DependencyInjectionExtensions.dll
+C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\Pagination.EntityFrameworkCore.Extensions.dll

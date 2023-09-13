@@ -40,12 +40,12 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<User>()
             .Property(e => e.ResetToken)
             .IsRequired(false);
-
-        // modelBuilder.Entity<User>()
-        //     .HasOne(user => user.Profile) // User has one Profile
-        //     .WithOne(profile => profile.User) // Profile has one User
-        //     .HasForeignKey<Profile>(profile => profile.UserId).IsRequired(); // Profile.UserId is the foreign key
-        // // Relationship is required (one-to-one)
+        
+        // Configure the one-to-many relationship
+        modelBuilder.Entity<Todo>()
+            .HasOne(t => t.User)         // Todo has one User
+            .WithMany(u => u.Todos)      // User has many Todos
+            .HasForeignKey(t => t.UserId); // Define the foreign key
 
     }
 }

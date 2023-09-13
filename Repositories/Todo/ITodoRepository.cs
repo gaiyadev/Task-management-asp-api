@@ -1,12 +1,16 @@
-﻿namespace TaskManagementAPI.Repositories.Todo;
+﻿using Pagination.EntityFrameworkCore.Extensions;
+using TaskManagementAPI.DTOs;
+using TaskManagementAPI.Pagination;
+
+namespace TaskManagementAPI.Repositories.Todo;
 
 public interface ITodoRepository
 {
-    Task<List<Models.Todo>> GetTodos();
+    Task<PagedResult<Models.Todo>> GetTodos(int page, int itemsPerPage);
     
-    Task<Models.Todo?> GetTodo(int id);
+    Task<Models.Todo> GetTodo(int id);
 
-    Task<Models.Todo> AddTodo(Models.Todo todo);
+    Task<Models.Todo> AddTodo(TodoDto todoDto, int userId);
 
     Task<Models.Todo?> UpdateTodo(Models.Todo todo, int id);
 

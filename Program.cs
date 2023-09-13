@@ -1,11 +1,14 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagementAPI.Database;
+using TaskManagementAPI.DTOs;
 using TaskManagementAPI.Middlewares;
 using TaskManagementAPI.Repositories.Todo;
 using TaskManagementAPI.Repositories.User;
@@ -15,7 +18,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-
 
 // Database configuration Injection
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -65,6 +67,11 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<TodoDtoValidator>();
+builder.Services.AddScoped<AuthUserIdExtractor>();
 
 var app = builder.Build();
 

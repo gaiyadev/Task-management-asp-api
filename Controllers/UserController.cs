@@ -28,17 +28,11 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("signup")]
-    public async Task<IActionResult> Signup(SignupDto signupDto)
+    public async Task<IActionResult> Signup([FromBody] SignupDto signupDto)
     {
         try
         {
             var user = await _userRepository.Signup(signupDto);
-            
-            // Is rarely for this to happen but in case
-            if (user == null)
-            {
-                return ApplicationExceptionResponseHelper.HandleNotFound("User not found");
-            }
             
             // Sending email
             string verificationLink = $"http://localhost:5178/verify?token={user.ResetToken}";
@@ -69,16 +63,11 @@ public class UserController : ControllerBase
     
     
     [HttpPost("signin")]
-    public async Task<IActionResult> SignIn(SigninDto signinDto)
+    public async Task<IActionResult> SignIn([FromBody] SigninDto signinDto)
     {
         try
         {
             var user = await _userRepository.SignIn(signinDto);
-            
-            if (user == null)
-            {
-                return ApplicationExceptionResponseHelper.HandleNotFound("User not found");
-            }
             
             // Create a JWT token.
             var token = _jwtService.CreateToken(user.Email, user.Name, user.Id);
@@ -93,9 +82,9 @@ public class UserController : ControllerBase
         {
             return ApplicationExceptionResponseHelper.HandleForbidden(ex.Message);
         }
-        catch (InternalServerException ex)
+        catch (NotFoundException ex)
         {
-            return ApplicationExceptionResponseHelper.HandleInternalServerError(ex.Message);
+            return ApplicationExceptionResponseHelper.HandleNotFound(ex.Message);
         }
         catch (Exception ex)
         {
@@ -109,11 +98,6 @@ public class UserController : ControllerBase
         try
         {
             var user = await _userRepository.VerifyEmail(token);
-            
-            if (user == null)
-            {
-                return ApplicationExceptionResponseHelper.HandleNotFound("User not found");
-            }
             
             var apiResponse = new List<object>
             {
@@ -135,27 +119,6 @@ public class UserController : ControllerBase
         }
     }
 
-    private (Guid?, bool?) GetUserClaims()
-    {
-        var userEmailClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userEmailClaim == null)
-        {
-            return (null, null); // Return null values for both Guid and bool
-        }
-
-        // Assuming you have a method to parse the email claim value into a Guid
-        if (Guid.TryParse(userEmailClaim.Value, out Guid parsedGuid))
-        {
-            return (parsedGuid, true); // Return the parsed Guid and true for bool
-        }
-        else
-        {
-            return (null, false); // Return null for Guid and false for bool if parsing fails
-        }
-    }
-
-
     [HttpPut("change-password")]
     [Authorize]
     public async Task<IActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
@@ -172,19 +135,10 @@ public class UserController : ControllerBase
         
         var findEmail = await _userRepository.GetUserByEmail(encodedUserId);
         
-        if (findEmail == null)
-        {
-            return ApplicationExceptionResponseHelper.HandleNotFound("Claim User not found");
-        }
-        
         try
         {
             var user = await _userRepository.ChangePassword(changePasswordDto, findEmail.Id);
-            
-            if (user == null)
-            {
-                return ApplicationExceptionResponseHelper.HandleNotFound("User not found");
-            }
+       
          
             var apiResponse = new List<object>
             {
@@ -248,11 +202,7 @@ public class UserController : ControllerBase
         try
         {
             var user = await _userRepository.GetUserById(id);
-
-            if (user == null)
-            {
-                return ApplicationExceptionResponseHelper.HandleNotFound("user not found");
-            }
+            
 
             var apiResponse = new List<object>
             {
@@ -273,7 +223,7 @@ public class UserController : ControllerBase
 
     [HttpPut("account")]
     [Authorize]
-    public async Task<IActionResult> Profile(ProfileDto profileDto)
+    public async Task<IActionResult> Profile([FromBody] ProfileDto profileDto)
     {
         try
         {
@@ -290,10 +240,7 @@ public class UserController : ControllerBase
             var findEmail = await _userRepository.GetUserByEmail(encodedUserId);
             
             var user = await _userRepository.Profile(profileDto, findEmail.Id);
-            if (user == null)
-            {
-                return NotFound();
-            }
+         
             Console.WriteLine(user);
             var apiResponse = new List<object>
             {
@@ -309,8 +256,25 @@ public class UserController : ControllerBase
         catch (Exception ex)
         {
             return ApplicationExceptionResponseHelper.HandleInternalServerError(ex.Message);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> FindAll()
+    {
+        try
+        {
+            var users = await _userRepository.FindAll();
+            return SuccessResponse.HandleOk("Fetched successfully", users, null);
+        }
+        catch (InternalServerException ex)
+        {
+            return ApplicationExceptionResponseHelper.HandleInternalServerError(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return ApplicationExceptionResponseHelper.HandleInternalServerError(ex.Message);
 
         }
     }
-    
 }

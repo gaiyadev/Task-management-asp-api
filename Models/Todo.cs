@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace TaskManagementAPI.Models;
 
@@ -18,10 +19,15 @@ public class Todo
     [Required]
     public required bool IsCompleted { get; set; }
     
-      
-    [Column(TypeName = "timestamp")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public int UserId { get; set; }
 
-    [Column(TypeName = "timestamp")]
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public User User { get; set; }
+    
+    [DataType(DataType.DateTime)]
+    [Column(TypeName = "timestamp with time zone")]
+    public DateTime CreatedAt { get; set; }
+
+    [DataType(DataType.DateTime)]
+    [Column(TypeName = "timestamp with time zone")]
+    public DateTime UpdatedAt { get; set; } 
 }
