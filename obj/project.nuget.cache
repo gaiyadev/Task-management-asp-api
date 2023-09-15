@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "x/pvoOVbKRHs9ZEoGWq9/Px3ru1tym3ac0qwvAKaFA3Zdk+7jFOGOp5DHF2d/mXuugi1a0np57KESF4T5Z+/mw==",
+  "dgSpecHash": "6MRRnDO7mPZMGLX/YK+MgfExTW6ML6Jyu3xuhqUvvsAUNI1Ixa2b8pnHHqSWQBbDKGd/a0A5CJWIgALpp08eUg==",
   "success": true,
   "projectFilePath": "C:\\projects\\dotnet\\TaskManagementAPI\\TaskManagementAPI.csproj",
   "expectedPackageFiles": [
@@ -24,6 +24,7 @@
     "C:\\Users\\DELL\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.2.0\\microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\DELL\\.nuget\\packages\\microsoft.aspnetcore.http.extensions\\2.2.0\\microsoft.aspnetcore.http.extensions.2.2.0.nupkg.sha512",
     "C:\\Users\\DELL\\.nuget\\packages\\microsoft.aspnetcore.http.features\\2.2.0\\microsoft.aspnetcore.http.features.2.2.0.nupkg.sha512",
+    "C:\\Users\\DELL\\.nuget\\packages\\microsoft.aspnetcore.mvc.versioning\\5.1.0\\microsoft.aspnetcore.mvc.versioning.5.1.0.nupkg.sha512",
     "C:\\Users\\DELL\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.10\\microsoft.aspnetcore.openapi.7.0.10.nupkg.sha512",
     "C:\\Users\\DELL\\.nuget\\packages\\microsoft.aspnetcore.webutilities\\2.2.0\\microsoft.aspnetcore.webutilities.2.2.0.nupkg.sha512",
     "C:\\Users\\DELL\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",

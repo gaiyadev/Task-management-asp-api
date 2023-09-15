@@ -10,8 +10,7 @@ public class TodoRepository : ITodoRepository
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<TodoRepository> _logger;
-
-
+    
     public TodoRepository(ApplicationDbContext context, ILogger<TodoRepository> logger)
     {
         _context = context;
@@ -28,8 +27,8 @@ public class TodoRepository : ITodoRepository
 
             // Apply pagination
             var todos = await _context.Todos
-                .Include(todo => todo.User) // Include the User
-                .ThenInclude(user => user.Profile) // Include the UserProfile
+                .Include(todo => todo.User) 
+                .ThenInclude(user => user.Profile) 
                 .OrderByDescending(todo => todo.Id)
                 .Skip((page - 1) * itemsPerPage)
                 .Take(itemsPerPage)
@@ -48,13 +47,12 @@ public class TodoRepository : ITodoRepository
             var paginationLinks = new PaginationLinks("http://localhost:5178/api/", page, totalPages, itemsPerPage);
 
             // Create the paged result
-            var pagedResult = new PagedResult<Models.Todo> 
+            return new PagedResult<Models.Todo> 
             {
                 Data = todos,
                 Meta = meta,
                 Links = paginationLinks 
             };
-            return pagedResult;
         }
         catch (Exception ex)
         {

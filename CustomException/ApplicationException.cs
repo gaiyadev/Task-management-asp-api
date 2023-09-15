@@ -1,5 +1,4 @@
-﻿using System.Net;
-
+﻿
 namespace TaskManagementAPI.CustomException;
 
 public class ApplicationException : Exception

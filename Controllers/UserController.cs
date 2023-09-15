@@ -12,7 +12,9 @@ using TaskManagementAPI.Services;
 namespace TaskManagementAPI.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/users")]
+[ApiVersion("1.0")]
+// [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
@@ -196,7 +198,7 @@ public class UserController : ControllerBase
         }
     }
     
-    [HttpGet("account/{id:int}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> GetUserById(int id)
     {
         try

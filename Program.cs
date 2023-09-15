@@ -1,10 +1,8 @@
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagementAPI.Database;
@@ -13,6 +11,7 @@ using TaskManagementAPI.Middlewares;
 using TaskManagementAPI.Repositories.Todo;
 using TaskManagementAPI.Repositories.User;
 using TaskManagementAPI.Services;
+using TaskManagementAPI.Services.Todo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,13 +29,17 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ITodoRepository, TodoRepository>();
 
+builder.Services.AddScoped<ITodoService, TodoService>();
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-builder.Services.AddSingleton<PasswordService>();
+builder.Services.AddTransient<PasswordService>();
 
-builder.Services.AddSingleton<JwtService>();
+builder.Services.AddTransient<JwtService>();
 
 builder.Services.AddTransient<EmailService>();
+
+builder.Services.AddTransient<AuthUserIdExtractor>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -68,10 +71,18 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services .AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
+
 builder.Services.AddFluentValidationAutoValidation();
+
 builder.Services.AddFluentValidationClientsideAdapters();
+
 builder.Services.AddValidatorsFromAssemblyContaining<TodoDtoValidator>();
-builder.Services.AddScoped<AuthUserIdExtractor>();
 
 var app = builder.Build();
 

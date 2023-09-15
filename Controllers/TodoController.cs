@@ -6,25 +6,28 @@ using TaskManagementAPI.CustomException.Helper;
 using TaskManagementAPI.CustomException.Responses;
 using TaskManagementAPI.DTOs;
 using TaskManagementAPI.Models;
-using TaskManagementAPI.Repositories.Todo;
 using TaskManagementAPI.Services;
+using TaskManagementAPI.Services.Todo;
 
 namespace TaskManagementAPI.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/todos")]
+[ApiVersion("1.0")]
+// [Route("api/[controller]")]
 public class TodoController : ControllerBase
 {
-    private readonly ITodoRepository  _todoRepository;
+    private readonly ITodoService  _todoService;
     private readonly IValidator<TodoDto> _validator;
     private readonly AuthUserIdExtractor _authUserIdExtractor;
-
-    public TodoController(ITodoRepository todoRepository, IValidator<TodoDto> validator, AuthUserIdExtractor authUserIdExtractor)
+    public TodoController(
+        ITodoService todoService, 
+        IValidator<TodoDto> validator,
+        AuthUserIdExtractor authUserIdExtractor)
     {
-        _todoRepository = todoRepository;
+        _todoService = todoService;
         _validator = validator;
         _authUserIdExtractor = authUserIdExtractor;
-
     }
     
     [HttpGet]
@@ -32,7 +35,7 @@ public class TodoController : ControllerBase
     {
         try
         {
-            var todos = await _todoRepository.GetTodos(page, itemsPerPage);
+            var todos = await _todoService.GetTodos(page, itemsPerPage);
             return SuccessResponse.HandleOk("Successfully Fetch", todos, null);
         }
         catch (InternalServerException ex)
@@ -51,7 +54,7 @@ public class TodoController : ControllerBase
     {
         try
         {
-            var todo = await _todoRepository.GetTodo(id);
+            var todo = await _todoService.GetTodo(id);
             return SuccessResponse.HandleOk("Successfully Fetched", todo, null);
         }
         catch (NotFoundException ex)
@@ -68,7 +71,6 @@ public class TodoController : ControllerBase
     [Authorize]
     public async Task<IActionResult> AddTodo(TodoDto todoDto)
     {
-        // Validate the DTO using Fluent Validation
         var validationResult = await _validator.ValidateAsync(todoDto);
 
         if (!validationResult.IsValid)
@@ -78,13 +80,13 @@ public class TodoController : ControllerBase
                 .ToList();
             return BadRequest(errors);
         }
-        // Get the user from HttpContext or your authentication mechanism
         var user = HttpContext.User;
-        // Pass the user to the repository to get the user's ID
+        
         var userId = _authUserIdExtractor.GetUserId(user);
+        
         try
         {
-            var  todo = await _todoRepository.AddTodo(todoDto, userId);
+            var  todo = await _todoService.AddTodo(todoDto, userId);
             var apiResponse = new List<object>
             {
                 new { id = todo.Id, title = todo.Title }
@@ -100,7 +102,7 @@ public class TodoController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateTodo(Todo todo, int id)
     {
-        var item = await _todoRepository.UpdateTodo(todo, id);
+        var item = await _todoService.UpdateTodo(todo, id);
         if (item == null)
         {
             return NotFound();
@@ -113,7 +115,7 @@ public class TodoController : ControllerBase
     {
         try
         {
-            var todo = await _todoRepository.DeleteTodo(id);
+            var todo = await _todoService.DeleteTodo(id);
             return Ok(todo);
         }
         catch (NotFoundException ex)

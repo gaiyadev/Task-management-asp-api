@@ -61,3 +61,4 @@ C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\FluentValidation.dll
 C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\FluentValidation.AspNetCore.dll
 C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\FluentValidation.DependencyInjectionExtensions.dll
 C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\Pagination.EntityFrameworkCore.Extensions.dll
+C:\projects\dotnet\TaskManagementAPI\bin\Debug\net7.0\Microsoft.AspNetCore.Mvc.Versioning.dll
