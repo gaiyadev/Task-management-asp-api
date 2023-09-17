@@ -6,8 +6,8 @@ using TaskManagementAPI.CustomException.Exceptions;
 using TaskManagementAPI.CustomException.Helper;
 using TaskManagementAPI.CustomException.Responses;
 using TaskManagementAPI.DTOs;
-using TaskManagementAPI.Repositories.User;
 using TaskManagementAPI.Services;
+using TaskManagementAPI.Services.Users;
 
 namespace TaskManagementAPI.Controllers;
 
@@ -17,16 +17,22 @@ namespace TaskManagementAPI.Controllers;
 // [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUserService _userService;
     private readonly JwtService _jwtService;
     private readonly EmailService _emailService;
+    private readonly AuthUserIdExtractor _authUserIdExtractor;
 
-    public UserController(IUserRepository userRepository, JwtService jwtService, EmailService emailService)
+
+    public UserController(
+        IUserService userService,
+        JwtService jwtService, 
+        EmailService emailService,   
+        AuthUserIdExtractor authUserIdExtractor)
     {
-        _userRepository = userRepository;
+        _userService = userService;
         _jwtService = jwtService;
         _emailService = emailService;
-
+        _authUserIdExtractor = authUserIdExtractor;
     }
 
     [HttpPost("signup")]
@@ -34,7 +40,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var user = await _userRepository.Signup(signupDto);
+            var user = await _userService.Signup(signupDto);
             
             // Sending email
             string verificationLink = $"http://localhost:5178/verify?token={user.ResetToken}";
@@ -69,7 +75,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var user = await _userRepository.SignIn(signinDto);
+            var user = await _userService.SignIn(signinDto);
             
             // Create a JWT token.
             var token = _jwtService.CreateToken(user.Email, user.Name, user.Id);
@@ -99,7 +105,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var user = await _userRepository.VerifyEmail(token);
+            var user = await _userService.VerifyEmail(token);
             
             var apiResponse = new List<object>
             {
@@ -125,21 +131,13 @@ public class UserController : ControllerBase
     [Authorize]
     public async Task<IActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
     {
-        // Get the user's ID claim
-        var userIdClaim = User.FindFirst(ClaimTypes.Email);
-
-        if (userIdClaim == null)
-        {
-            return Forbid();
-        }
+        var findUserId = HttpContext.User;
         
-        string encodedUserId = userIdClaim.Value;
-        
-        var findEmail = await _userRepository.GetUserByEmail(encodedUserId);
+        var userId = _authUserIdExtractor.GetUserId(findUserId);
         
         try
         {
-            var user = await _userRepository.ChangePassword(changePasswordDto, findEmail.Id);
+            var user = await _userService.ChangePassword(changePasswordDto, userId);
        
          
             var apiResponse = new List<object>
@@ -171,12 +169,12 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpGet("{email:required}")]
+    [HttpGet("email/{email:required}")]
     public async Task<IActionResult> GetUserByEmail(string email)
     {
         try
         {
-            var user =  await _userRepository.GetUserByEmail(email);
+            var user =  await _userService.GetUserByEmail(email);
          
             var apiResponse = new List<object>
             {
@@ -203,7 +201,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var user = await _userRepository.GetUserById(id);
+            var user = await _userService.GetUserById(id);
             
 
             var apiResponse = new List<object>
@@ -239,9 +237,9 @@ public class UserController : ControllerBase
         
             string encodedUserId = userIdClaim.Value;
         
-            var findEmail = await _userRepository.GetUserByEmail(encodedUserId);
+            var findEmail = await _userService.GetUserByEmail(encodedUserId);
             
-            var user = await _userRepository.Profile(profileDto, findEmail.Id);
+            var user = await _userService.Profile(profileDto, findEmail.Id);
          
             Console.WriteLine(user);
             var apiResponse = new List<object>
@@ -266,7 +264,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var users = await _userRepository.FindAll();
+            var users = await _userService.FindAll();
             return SuccessResponse.HandleOk("Fetched successfully", users, null);
         }
         catch (InternalServerException ex)

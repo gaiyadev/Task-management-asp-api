@@ -4,7 +4,7 @@ using TaskManagementAPI.Repositories.Todo;
 
 namespace TaskManagementAPI.Services.Todo;
 
-public class TodoService: ITodoService
+public class TodoService : ITodoService
 {
     private readonly ITodoRepository _todoRepository;
 

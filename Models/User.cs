@@ -5,29 +5,31 @@ using System.Text.Json.Serialization;
 
 namespace TaskManagementAPI.Models;
 
+[Table("users")]
     public class User
     {
         [Key]
+        [Column("id")]
         public int Id { get; set; }
 
         [Required]
-        [Column(TypeName = "VARCHAR(255)")]
+        [Column("name",TypeName = "VARCHAR(255)")]
         public required string  Name { get; set; }
     
-        [Required(ErrorMessage = "Email is required")]
-        [Column(TypeName = "VARCHAR(255)")]
+        [Required]
+        [Column("email",TypeName = "VARCHAR(255)")]
         public required string  Email { get; set; }
     
         [Required]
-        [Column(TypeName = "VARCHAR(255)")]
+        [Column("password",TypeName = "VARCHAR(255)")]
         public string  Password { get; set; }
 
-        [Column(TypeName = "VARCHAR(255)")]
+        [Column("is_active",TypeName = "boolean")]
         [DefaultValue(false)]
         public bool IsActive { get; set; }
     
     
-        [Column(TypeName = "VARCHAR(255)")]
+        [Column("reset_token",TypeName = "VARCHAR(255)")]
         public Guid? ResetToken { get; set; }
         
         public Profile Profile { get; set; }
@@ -36,11 +38,11 @@ namespace TaskManagementAPI.Models;
         public ICollection<Todo> Todos { get; set; }
     
         [DataType(DataType.DateTime)]
-        [Column(TypeName = "timestamp with time zone")]   
+        [Column("created_at",TypeName = "timestamp with time zone")]   
         public DateTime CreatedAt { get; set; }
 
         [DataType(DataType.DateTime)]
-        [Column(TypeName = "timestamp with time zone")]
+        [Column("updated_at",TypeName = "timestamp with time zone")]
         public DateTime UpdatedAt { get; set; } 
     }
 

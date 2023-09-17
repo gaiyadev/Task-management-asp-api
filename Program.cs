@@ -12,6 +12,7 @@ using TaskManagementAPI.Repositories.Todo;
 using TaskManagementAPI.Repositories.User;
 using TaskManagementAPI.Services;
 using TaskManagementAPI.Services.Todo;
+using TaskManagementAPI.Services.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ITodoRepository, TodoRepository>();
 
 builder.Services.AddScoped<ITodoService, TodoService>();
+
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 

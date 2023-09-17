@@ -12,7 +12,7 @@ using TaskManagementAPI.Database;
 namespace TaskManagementAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230912232506_InitialCreate")]
+    [Migration("20230917225401_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -29,7 +29,8 @@ namespace TaskManagementAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -38,97 +39,118 @@ namespace TaskManagementAPI.Migrations
 
                     b.Property<string>("Occupation")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(255)");
+                        .HasColumnType("VARCHAR(255)")
+                        .HasColumnName("occupation");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(255)");
+                        .HasColumnType("VARCHAR(255)")
+                        .HasColumnName("username");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Profiles");
+                    b.ToTable("profiles");
                 });
 
             modelBuilder.Entity("TaskManagementAPI.Models.Todo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Duration")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("VARCHAR(255)")
+                        .HasColumnName("duration");
 
                     b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("Is_completed");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(255)");
+                        .HasColumnType("VARCHAR(255)")
+                        .HasColumnName("title");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Todos");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("todos");
                 });
 
             modelBuilder.Entity("TaskManagementAPI.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(255)");
-
-                    b.Property<string>("IsActive")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("VARCHAR(255)")
-                        .HasDefaultValue("0");
+                        .HasColumnName("email");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_active");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(255)");
+                        .HasColumnType("VARCHAR(255)")
+                        .HasColumnName("name");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(255)");
+                        .HasColumnType("VARCHAR(255)")
+                        .HasColumnName("password");
 
                     b.Property<string>("ResetToken")
-                        .HasColumnType("VARCHAR(255)");
+                        .HasColumnType("VARCHAR(255)")
+                        .HasColumnName("reset_token");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("users");
                 });
 
             modelBuilder.Entity("TaskManagementAPI.Models.Profile", b =>
@@ -142,10 +164,23 @@ namespace TaskManagementAPI.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("TaskManagementAPI.Models.Todo", b =>
+                {
+                    b.HasOne("TaskManagementAPI.Models.User", "User")
+                        .WithMany("Todos")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("TaskManagementAPI.Models.User", b =>
                 {
                     b.Navigation("Profile")
                         .IsRequired();
+
+                    b.Navigation("Todos");
                 });
 #pragma warning restore 612, 618
         }

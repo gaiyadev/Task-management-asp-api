@@ -3,19 +3,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 namespace TaskManagementAPI.Models;
 
+[Table("profiles")]
 public class Profile
 {
     [Key]
+    [Column("id")]
     public int Id { get; set; }
 
-    [Required(ErrorMessage = "Username is required")]
-    [Column(TypeName = "VARCHAR(255)")]
+    [Required]
+    [Column("username",TypeName = "VARCHAR(255)")]
     public string Username { get; set; }
 
-    [Required(ErrorMessage = "Occupation is required")]
-    [Column(TypeName = "VARCHAR(255)")]
+    [Required]
+    [Column("occupation",TypeName = "VARCHAR(255)")]
     public string Occupation { get; set; }
 
+    [Column("user_id")]
     public int UserId { get; set; }
     [Key, ForeignKey("UserId")]
 
