@@ -1,6 +1,6 @@
 ﻿namespace TaskManagementAPI.CustomException.Helper;
 
-public class HttpStatusTitles
+public static class HttpStatusTitles
 {
     public const string BadRequest = "BadRequest";
     public const string Unauthorized = "Unauthorized";

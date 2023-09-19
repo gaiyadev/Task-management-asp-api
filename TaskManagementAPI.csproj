@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+        <PackageReference Include="FlueFlame.AspNetCore" Version="1.0.0" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
         <PackageReference Include="MailKit" Version="4.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
@@ -20,9 +21,11 @@
         </PackageReference>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
+        <PackageReference Include="NuGet.Frameworks" Version="6.7.0" />
         <PackageReference Include="Pagination.EntityFrameworkCore.Extensions" Version="2.4.3" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.3" />
+        <PackageReference Include="xunit" Version="2.5.0" />
 
 
 
@@ -39,6 +42,13 @@
 
 
 
+
+
+
+
+<!--    <ItemGroup>-->
+<!--      <Folder Include="Tests\" />-->
+<!--    </ItemGroup>-->
 
     </ItemGroup>
 

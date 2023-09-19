@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TaskManagementAPI.Models;
 using TaskManagementAPI.Responses;
 
 namespace TaskManagementAPI.CustomException.Helper
