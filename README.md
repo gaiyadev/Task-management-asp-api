@@ -42,6 +42,14 @@ dotnet ef migrations list
 dotnet ef migrations remove
 ```
 
+### `dotnet ef migrations remove --force (migration name can be pass too)`
+
+- **Description:** Removes the last applied migration and file.
+- **Example:** 
+```bash 
+dotnet ef migrations remove
+```
+
 ## Dropping the Database
 
 ### `dotnet ef database drop`
