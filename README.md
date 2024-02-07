@@ -36,7 +36,7 @@ dotnet ef migrations list
 
 ### `dotnet ef migrations remove`
 
-- **Description:** Removes the last applied migration.
+- **Description:** Removes the last migration file.
 - **Example:** 
 ```bash 
 dotnet ef migrations remove
